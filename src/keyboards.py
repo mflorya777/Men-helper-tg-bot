@@ -9,12 +9,12 @@ from aiogram.types import (
 start_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text='❓ Помощь'),
-            KeyboardButton(text='ℹ️ Обо мне'),
-            KeyboardButton(text='📊 Исследования')
+            KeyboardButton(text="❓ Помощь"),
+            KeyboardButton(text="ℹ️ Обо мне"),
+            KeyboardButton(text="📊 Исследования")
         ],
         [
-            KeyboardButton(text='📋 Меню')
+            KeyboardButton(text="📋 Меню")
         ],
     ], resize_keyboard=True
 )

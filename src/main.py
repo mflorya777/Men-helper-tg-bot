@@ -26,11 +26,17 @@ async def main() -> None:
     Функция запуска бота.
     """
     await register_handlers(dp)
-    bot = Bot(token=TOKEN)
-    _LOG.info("Бот запущен")
+    bot = Bot(
+        token=TOKEN,
+    )
+    _LOG.info(
+        "Бот запущен"
+    )
     await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(
+        main()
+    )
 

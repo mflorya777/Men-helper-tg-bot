@@ -12,7 +12,9 @@ from src import (
 _LOG = logging.getLogger("woman-tg-bot")
 
 
-async def register_handlers(dp):
+async def register_handlers(
+    dp,
+):
     @dp.message(
         Command("start"),
     )

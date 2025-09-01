@@ -1,39 +1,33 @@
+#!/usr/bin/env python
+
 import asyncio
+import logging
 from os import getenv
+
 from dotenv import load_dotenv
 
 from aiogram import (
     Bot,
     Dispatcher,
 )
-from aiogram.filters import Command
-from aiogram.types import Message
+
+from src.handlers import register_handlers
 
 
+_LOG = logging.getLogger("woman-tg-bot")
 load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
 dp = Dispatcher()
 
 
-@dp.message(Command("start"))
-async def handler_start(
-    message: Message,
-) -> None:
-    """
-    Хэндлер старта бота.
-    """
-    await message.answer(
-        "Привет! Я бот, сделанный на aiogram."
-    )
-
-
-# Запуск бота
 async def main() -> None:
     """
     Функция запуска бота.
     """
+    await register_handlers(dp)
     bot = Bot(token=TOKEN)
+    _LOG.info("Бот запущен")
     await dp.start_polling(bot)
 
 

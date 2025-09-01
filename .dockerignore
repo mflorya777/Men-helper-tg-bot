@@ -1,0 +1,6 @@
+env
+venv
+files_storage_directory
+.gitea
+.git
+pycache

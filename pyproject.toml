@@ -1,0 +1,81 @@
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "pypackages",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Same as Black.
+line-length = 100
+indent-width = 4
+
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "B",
+    "S",
+    "ASYNC",
+    "FBT",
+    "A",
+    "COM",
+    "G",
+    "PYI",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["S"]
+"*.py" = [
+    "G004",
+    "FBT002",
+    "FBT001",
+    "B008",
+    "B904"
+
+]
+
+[tool.mypy]
+explicit_package_bases = true
+mypy_path = "."
+plugins = "pydantic.mypy"
+exclude = [
+    "venv",
+]
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["cachetools", "folium", "folium.plugins", "streamlit_folium"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "src",
+]
+disable_error_code = ["call-arg"]

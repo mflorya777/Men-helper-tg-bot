@@ -17,11 +17,15 @@ dp = Dispatcher()
 
 
 @dp.message(Command("start"))
-async def command_start_handler(message: Message) -> None:
+async def handler_start(
+    message: Message,
+) -> None:
     """
     Хэндлер старта бота.
     """
-    await message.answer("Привет! Я бот, сделанный на aiogram.")
+    await message.answer(
+        "Привет! Я бот, сделанный на aiogram."
+    )
 
 
 # Запуск бота

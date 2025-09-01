@@ -1,0 +1,19 @@
+name: woman-tg-bot
+services:
+  woman-tg-bot:
+    image: ${IMAGE_NAME}
+    hostname: woman-tg-bot
+    container_name: woman-tg-bot
+    ports:
+      - "8081:8081"
+    networks:
+      - vps-network
+    env_file:
+      - ../${ENV}local.env
+    volumes:
+      - ${FILES_STORAGE_DIRECTORY}:/opt/woman-tg-bot/files_storage_directory
+
+networks:
+  vps-network:
+    name: vps-network
+    driver: bridge

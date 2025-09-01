@@ -25,14 +25,18 @@ async def main() -> None:
     """
     Функция запуска бота.
     """
-    await register_handlers(dp)
+    await register_handlers(
+        dp,
+    )
     bot = Bot(
         token=TOKEN,
     )
     _LOG.info(
         "Бот запущен"
     )
-    await dp.start_polling(bot)
+    await dp.start_polling(
+        bot,
+    )
 
 
 if __name__ == "__main__":

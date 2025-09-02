@@ -41,6 +41,9 @@ async def handler_start(
 async def send_girls(
     message: Message,
 ):
+    """
+    Функция вывода текста и кнопок с девушками.
+    """
     await message.answer(
         texts.girls,
         parse_mode="HTML",

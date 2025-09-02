@@ -1,8 +1,15 @@
 import logging
+from functools import partial
 
-from aiogram import types
+from aiogram import (
+    types,
+    F,
+)
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import (
+    Message,
+    LabeledPrice,
+)
 from aiogram import Dispatcher
 from aiogram.fsm.context import FSMContext
 
@@ -133,12 +140,114 @@ async def handler_about_button(
     )
 
 
+async def buy_stars(
+    callback_query: types.CallbackQuery,
+    plan: str = "month",
+):
+    """
+    Функция отправки счета на Telegram Stars.
+    plan: 'month' или 'year'.
+    """
+    if plan == "month":
+        prices = [LabeledPrice(
+            label="Подписка Premium на месяц",
+            # FIXME: Поменять сумму
+            amount=1,  # 499
+        )]
+        payload = "premium_1_month"
+        title = "Подписка Premium (Месяц)"
+    elif plan == "year":
+        prices = [LabeledPrice(
+            label="Подписка Premium на год",
+            # FIXME: Поменять сумму
+            amount=2,  # 4190
+        )]
+        payload = "premium_1_year"
+        title = "Подписка Premium (Год)"
+    else:
+        await callback_query.answer("Неверный тип подписки!")
+        return
+
+    await callback_query.message.answer_invoice(
+        title=title,
+        description="Доступ ко всем функциям бота",
+        payload=payload,
+        provider_token="",
+        currency="XTR",
+        prices=prices,
+        start_parameter=payload
+    )
+    await callback_query.answer()
+
+
+async def pre_checkout_stars(
+    pre_checkout_query: types.PreCheckoutQuery,
+):
+    """
+    Функция о предварительном подтверждении оплаты.
+    """
+    if pre_checkout_query.invoice_payload != "premium_1_month":
+        await pre_checkout_query.answer(
+            ok=False,
+            error_message="Что-то пошло не так...",
+        )
+    else:
+        await pre_checkout_query.answer(
+            ok=True,
+        )
+
+
+# FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
+# TODO: Добавить сохранение уровня аккаунт (премиум или нет) через базу
+async def successful_payment_stars(
+    message: types.Message,
+    state: FSMContext,
+):
+    """
+    Функция об успешной оплате.
+    """
+    payment = message.successful_payment
+    telegram_payment_charge_id = payment.telegram_payment_charge_id
+
+    # Сохраняем флаг подписки в FSM
+    await state.update_data(
+        has_subscription=True,
+    )
+
+    # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
+    await message.answer(
+        f"✅ Подписка успешно оформлена! ID платежа: {telegram_payment_charge_id}",
+        reply_markup=keyboards.start_kb,
+    )
+
+
 async def register_handlers(
     dp: Dispatcher,
 ):
     """
     Функция регистрации всех хэндлеров.
     """
+    dp.callback_query.register(
+        partial(
+            buy_stars,
+            plan="year",
+        ),
+        F.data == "subscription_year",
+    )
+    dp.callback_query.register(
+        partial(
+            buy_stars,
+            plan="month",
+        ),
+        F.data == "subscription_all",
+    )
+    dp.pre_checkout_query.register(
+        pre_checkout_stars,
+    )
+    dp.message.register(
+        successful_payment_stars,
+        F.content_type == types.ContentType.SUCCESSFUL_PAYMENT,
+    )
     dp.message.register(
         handler_start,
         Command("start"),

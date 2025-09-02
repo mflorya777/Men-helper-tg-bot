@@ -4,6 +4,7 @@ from aiogram import types
 from aiogram.types import (
     Message,
     LabeledPrice,
+    FSInputFile,
 )
 from aiogram.fsm.context import FSMContext
 
@@ -87,6 +88,43 @@ async def process_girl(
         girl_name = callback_query.data.split("_")[1]  # например, "hera"
         await callback_query.message.answer(
             f"Ты выбрал девушку: <b>{girl_name.capitalize()}</b> 😉",
+            parse_mode="HTML",
+        )
+
+    await callback_query.answer()
+
+
+async def process_see_all_girls(
+    callback_query: types.CallbackQuery,
+):
+    girls_data = [
+        {
+            "name": "Гера",
+            "text": "💃 Это Гера — загадочная и страстная!",
+            "photo": "static/images/girl_1.jpg",
+        },
+        {
+            "name": "Ева",
+            "text": "👠 Ева — нежная, но с огоньком!",
+            "photo": "static/images/girl_2.jpg",
+        },
+        {
+            "name": "Вероника",
+            "text": "👸🏻 Вероника — настоящая принцесса!",
+            "photo": "static/images/girl_3.jpg",
+        },
+        {
+            "name": "Кейт",
+            "text": "👩🏻‍🦰 Кейт — горячая с мягким характером!",
+            "photo": "static/images/girl_4.jpg",
+        },
+    ]
+
+    for girl in girls_data:
+        photo = FSInputFile(girl["photo"])
+        await callback_query.message.answer_photo(
+            photo=photo,
+            caption=girl["text"],
             parse_mode="HTML",
         )
 

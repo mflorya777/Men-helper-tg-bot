@@ -47,6 +47,12 @@ girls_kb = InlineKeyboardMarkup(
                 callback_data="girl_kate",
             ),
         ],
+        [
+            InlineKeyboardButton(
+                text="✨ Посмотреть всех",
+                callback_data="see_all_girls",
+            )
+        ]
     ],
     resize_keyboard=True,
 )

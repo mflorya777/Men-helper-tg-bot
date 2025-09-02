@@ -17,7 +17,8 @@ from src.handlers import register_handlers
 _LOG = logging.getLogger("woman-tg-bot")
 load_dotenv()
 
-TOKEN = getenv("BOT_TOKEN")
+# TOKEN = getenv("BOT_TOKEN")
+TOKEN = "7885048353:AAH-1ndPptp4JTTiL6gl0SAZ32UlqBzsdPI"
 dp = Dispatcher()
 
 

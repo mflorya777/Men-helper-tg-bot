@@ -62,17 +62,21 @@ before_buy_kb = InlineKeyboardMarkup(
                 text="🔥 Оформить подписку на год (Скидка 30%!)",
                 callback_data="subscription_year",
             ),
+        ],
+        [
             InlineKeyboardButton(
                 text="🔥 Оформить подписку",
                 callback_data="subscription_all",
             ),
-            # InlineKeyboardButton(
-            #     text="🤝 Получить подписку бесплатно",
-            #     callback_data="subscription_free",
-            # ),
         ],
+        # [
+        #     InlineKeyboardButton(
+        #         text="🤝 Получить подписку бесплатно",
+        #         callback_data="subscription_free",
+        #     ),
+        # ],
     ],
-    resize_keyboard=True,
+    resize_keyboard=False,
 )
 
 buy_kb = InlineKeyboardMarkup(

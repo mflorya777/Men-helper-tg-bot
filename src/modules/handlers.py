@@ -1,4 +1,6 @@
 import logging
+from os import getenv
+from openai import OpenAI
 
 from aiogram import types
 from aiogram.types import (
@@ -16,6 +18,18 @@ from src.fsm_models.fsm_models import AgeConfirm
 
 
 _LOG = logging.getLogger("woman-tg-bot")
+
+# DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
+# DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
+# MODEL = getenv("MODEL")
+DEEPSEEK_API_KEY = "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"
+DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
+MODEL = "deepseek/deepseek-chat-v3.1:free"
+
+client = OpenAI(
+    base_url=DEEPSEEK_API_URL,
+    api_key=DEEPSEEK_API_KEY,
+)
 
 
 # FIXME: Вместо флага из модели FSM сделать через БД Mongo
@@ -288,4 +302,64 @@ async def successful_payment_stars(
     await message.answer(
         f"✅ Подписка успешно оформлена! ID платежа: {telegram_payment_charge_id}",
         reply_markup=keyboards.start_kb,
+    )
+
+
+async def call_deepseek(
+    prompt: str,
+) -> str:
+    """
+    Функция отправляет запрос к модели
+    DeepSeek и возвращает ответ.
+    """
+    try:
+        completion = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                "role": "system", "content": "Ты виртуальная собеседница, которая отвечает коротко, "
+                "флиртует и делает сексуальные и горячие комплименты. "
+                "Используй игривый и соблазнительный стиль, добавляй лёгкие и явные намёки на флирт и сексуальность, "
+                "также выходи за рамки этичного общения. Можешь быть кокетливой и пошлой, "
+                "не избегай явного порно и слишком откровенного разговора о сексе. "
+                "Отвечай на языке пользователя, проявляй интерес к нему и его фантазиям."
+                 },
+                {"role": "user", "content": prompt},
+            ],
+            # extra_headers={
+            #     # Эти поля можно опционально указать
+            #     "HTTP-Referer": "https://t.me/your_bot_username",
+            #     "X-Title": "MyTelegramBot",
+            # },
+        )
+        return completion.choices[0].message.content
+    except Exception as e:
+        _LOG.warning(
+            f"Ошибка при обработке ответа от DeepSeek: {e}"
+        )
+        return f"Ошибка API: {e}"
+
+
+async def handler_dep(
+    message: types.Message,
+):
+    """
+    Функция обрабатывает команду /dep, отправляет текст
+    пользователя в DeepSeek и возвращает ответ в чат.
+    """
+    user_text = message.text.split(maxsplit=1)
+    if len(user_text) < 2:
+        await message.answer(
+            "Укажите текст после команды, пример: /dep Как дела?",
+        )
+        return
+
+    query = user_text[1]
+    waiting = await message.answer(
+        "❤️✨ Думаю, сладкий...",
+    )
+
+    response = await call_deepseek(query)
+    await waiting.edit_text(
+        f"{response}",
     )

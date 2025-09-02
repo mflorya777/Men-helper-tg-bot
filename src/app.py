@@ -26,9 +26,9 @@ from src.modules.handlers import (
 
 
 _LOG = logging.getLogger("woman-tg-bot")
-load_dotenv()
 
 TOKEN = getenv("BOT_TOKEN")
+load_dotenv()
 dp = Dispatcher()
 
 

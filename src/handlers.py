@@ -27,14 +27,13 @@ async def handler_start(
     )
 
 
-# TODO: Поменять текст и добавить нужные кнопки (4 штуки)
 async def process_confirm_18(
     callback_query: types.CallbackQuery,
 ):
     await callback_query.message.answer(
-        texts.about_us,
+        texts.girls,
         parse_mode="HTML",
-        reply_markup=keyboards.start_kb,
+        reply_markup=keyboards.girls_kb,
     )
     await callback_query.answer()
 

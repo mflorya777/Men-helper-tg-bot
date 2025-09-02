@@ -16,7 +16,6 @@ from src.fsm_models.fsm_models import AgeConfirm
 _LOG = logging.getLogger("woman-tg-bot")
 
 
-
 async def handler_start(
     message: Message,
     state: FSMContext,

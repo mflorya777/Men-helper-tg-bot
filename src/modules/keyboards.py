@@ -11,10 +11,6 @@ start_kb = ReplyKeyboardMarkup(
         [
             KeyboardButton(text="❓ Помощь"),
             KeyboardButton(text="ℹ️ Обо мне"),
-            KeyboardButton(text="📊 Исследования")
-        ],
-        [
-            KeyboardButton(text="📋 Меню")
         ],
     ],
     resize_keyboard=True,
@@ -51,6 +47,12 @@ girls_kb = InlineKeyboardMarkup(
                 callback_data="girl_kate",
             ),
         ],
+        [
+            InlineKeyboardButton(
+                text="✨ Посмотреть всех",
+                callback_data="see_all_girls",
+            )
+        ]
     ],
     resize_keyboard=True,
 )
@@ -77,12 +79,4 @@ before_buy_kb = InlineKeyboardMarkup(
         # ],
     ],
     resize_keyboard=False,
-)
-
-buy_kb = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(text="Написать", url="https://t.me/durov"),
-        ],
-    ]
 )

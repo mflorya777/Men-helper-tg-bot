@@ -4,6 +4,7 @@ from aiogram import types
 from aiogram.types import (
     Message,
     LabeledPrice,
+    FSInputFile,
 )
 from aiogram.fsm.context import FSMContext
 
@@ -36,7 +37,9 @@ async def handler_start(
             parse_mode="HTML",
             reply_markup=keyboards.confirm_kb,
         )
-        await state.set_state(AgeConfirm.not_confirmed)
+        await state.set_state(
+            AgeConfirm.not_confirmed,
+        )
 
 
 async def send_girls(
@@ -56,8 +59,12 @@ async def process_confirm_18(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    await state.set_state(AgeConfirm.confirmed)  # сохраняем статус
-    await send_girls(callback_query.message)
+    await state.set_state(
+        AgeConfirm.confirmed,
+    )  # сохраняем статус
+    await send_girls(
+        callback_query.message,
+    )
     await callback_query.answer()
 
 
@@ -87,6 +94,43 @@ async def process_girl(
     await callback_query.answer()
 
 
+async def process_see_all_girls(
+    callback_query: types.CallbackQuery,
+):
+    girls_data = [
+        {
+            "name": "Гера",
+            "text": "💃 Это Гера — загадочная и страстная!",
+            "photo": "static/images/girl_1.jpg",
+        },
+        {
+            "name": "Ева",
+            "text": "👠 Ева — нежная, но с огоньком!",
+            "photo": "static/images/girl_2.jpg",
+        },
+        {
+            "name": "Вероника",
+            "text": "👸🏻 Вероника — настоящая принцесса!",
+            "photo": "static/images/girl_3.jpg",
+        },
+        {
+            "name": "Кейт",
+            "text": "👩🏻‍🦰 Кейт — горячая с мягким характером!",
+            "photo": "static/images/girl_4.jpg",
+        },
+    ]
+
+    for girl in girls_data:
+        photo = FSInputFile(girl["photo"])
+        await callback_query.message.answer_photo(
+            photo=photo,
+            caption=girl["text"],
+            parse_mode="HTML",
+        )
+
+    await callback_query.answer()
+
+
 # TODO: Сделать обработку покупки через звезды в Телеграм
 # Обработка покупки (пока заглушка)
 async def process_subscription_year(
@@ -94,8 +138,12 @@ async def process_subscription_year(
     state: FSMContext,
 ):
     # Сохраняем флаг подписки
-    await state.update_data(has_subscription=True)
-    await callback_query.message.answer("✅ Подписка на год активирована!")
+    await state.update_data(
+        has_subscription=True,
+    )
+    await callback_query.message.answer(
+        "✅ Подписка на год активирована!",
+    )
     await callback_query.answer()
 
 
@@ -103,8 +151,12 @@ async def process_subscription_all(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    await state.update_data(has_subscription=True)
-    await callback_query.message.answer("✅ Подписка активирована!")
+    await state.update_data(
+        has_subscription=True,
+    )
+    await callback_query.message.answer(
+        "✅ Подписка активирована!",
+    )
     await callback_query.answer()
 
 
@@ -122,7 +174,7 @@ async def handler_about_slash(
 
 
 async def handler_about_button(
-        message: Message,
+    message: Message,
 ) -> None:
     """
     Хэндлер для кнопки о боте.
@@ -131,6 +183,30 @@ async def handler_about_button(
         texts.about_us,
         parse_mode="HTML",
         reply_markup=keyboards.start_kb,
+    )
+
+
+async def handler_help_slash(
+    message: Message,
+) -> None:
+    """
+    Хэндлер со слэшем помощи бота: /help.
+    """
+    await message.answer(
+        texts.helping,
+        parse_mode="HTML",
+    )
+
+
+async def handler_help_button(
+    message: Message,
+) -> None:
+    """
+    Хэндлер для кнопки о помощи бота.
+    """
+    await message.answer(
+        texts.helping,
+        parse_mode="HTML",
     )
 
 

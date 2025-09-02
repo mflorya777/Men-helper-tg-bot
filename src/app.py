@@ -22,6 +22,9 @@ from src.modules.handlers import (
     process_girl,
     process_subscription_year,
     process_subscription_all,
+    handler_help_slash,
+    handler_help_button,
+    process_see_all_girls,
 )
 
 
@@ -77,10 +80,23 @@ async def register_handlers(
         lambda
             message: message.text == "ℹ️ Обо мне",
     )
+    dp.message.register(
+        handler_help_slash,
+        Command("help"),
+    )
+    dp.message.register(
+        handler_help_button,
+        lambda
+            message: message.text == "❓ Помощь",
+    )
     dp.callback_query.register(
         process_girl,
         lambda
             c: c.data.startswith("girl_"),
+    )
+    dp.callback_query.register(
+        process_see_all_girls,
+        F.data == "see_all_girls",
     )
     dp.callback_query.register(
         process_subscription_year,

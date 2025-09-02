@@ -6,9 +6,9 @@ from aiogram.types import Message
 from aiogram import Dispatcher
 from aiogram.fsm.context import FSMContext
 
-from src import (
-    texts,
+from src.modules import (
     keyboards,
+    texts,
 )
 from src.fsm_models.fsm_models import AgeConfirm
 

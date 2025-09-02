@@ -22,7 +22,7 @@ _LOG = logging.getLogger("woman-tg-bot")
 # DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
 # DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
 # MODEL = getenv("MODEL")
-DEEPSEEK_API_KEY = "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"
+DEEPSEEK_API_KEY = "api_key"
 DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
 MODEL = "deepseek/deepseek-chat-v3.1:free"
 

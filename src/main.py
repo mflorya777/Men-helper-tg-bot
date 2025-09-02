@@ -11,7 +11,7 @@ from aiogram import (
     Dispatcher,
 )
 
-from src.handlers import register_handlers
+from src.modules.handlers import register_handlers
 
 
 _LOG = logging.getLogger("woman-tg-bot")
@@ -44,4 +44,3 @@ if __name__ == "__main__":
     asyncio.run(
         main()
     )
-

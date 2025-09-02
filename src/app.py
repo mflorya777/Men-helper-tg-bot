@@ -25,12 +25,14 @@ from src.modules.handlers import (
     handler_help_slash,
     handler_help_button,
     process_see_all_girls,
+    handler_dep,
 )
 
 
 _LOG = logging.getLogger("woman-tg-bot")
 
-TOKEN = getenv("BOT_TOKEN")
+# TOKEN = getenv("BOT_TOKEN")
+TOKEN = "7885048353:AAH-1ndPptp4JTTiL6gl0SAZ32UlqBzsdPI"
 load_dotenv()
 dp = Dispatcher()
 
@@ -107,6 +109,10 @@ async def register_handlers(
         process_subscription_all,
         lambda
             c: c.data == "subscription_all",
+    )
+    dp.message.register(
+        handler_dep,
+        Command("dep"),
     )
 
 

@@ -1,5 +1,6 @@
 env
 venv
+.venv
 files_storage_directory
 .gitea
 .git

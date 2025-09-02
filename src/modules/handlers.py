@@ -1,16 +1,10 @@
 import logging
-from functools import partial
 
-from aiogram import (
-    types,
-    F,
-)
-from aiogram.filters import Command
+from aiogram import types
 from aiogram.types import (
     Message,
     LabeledPrice,
 )
-from aiogram import Dispatcher
 from aiogram.fsm.context import FSMContext
 
 from src.modules import (
@@ -175,7 +169,7 @@ async def buy_stars(
         provider_token="",
         currency="XTR",
         prices=prices,
-        start_parameter=payload
+        start_parameter=payload,
     )
     await callback_query.answer()
 
@@ -218,66 +212,4 @@ async def successful_payment_stars(
     await message.answer(
         f"✅ Подписка успешно оформлена! ID платежа: {telegram_payment_charge_id}",
         reply_markup=keyboards.start_kb,
-    )
-
-
-async def register_handlers(
-    dp: Dispatcher,
-):
-    """
-    Функция регистрации всех хэндлеров.
-    """
-    dp.callback_query.register(
-        partial(
-            buy_stars,
-            plan="year",
-        ),
-        F.data == "subscription_year",
-    )
-    dp.callback_query.register(
-        partial(
-            buy_stars,
-            plan="month",
-        ),
-        F.data == "subscription_all",
-    )
-    dp.pre_checkout_query.register(
-        pre_checkout_stars,
-    )
-    dp.message.register(
-        successful_payment_stars,
-        F.content_type == types.ContentType.SUCCESSFUL_PAYMENT,
-    )
-    dp.message.register(
-        handler_start,
-        Command("start"),
-    )
-    dp.callback_query.register(
-        process_confirm_18,
-        lambda
-            c: c.data == "confirm_18",
-    )
-    dp.message.register(
-        handler_about_slash,
-        Command("about"),
-    )
-    dp.message.register(
-        handler_about_button,
-        lambda
-            message: message.text == "ℹ️ Обо мне",
-    )
-    dp.callback_query.register(
-        process_girl,
-        lambda
-            c: c.data.startswith("girl_"),
-    )
-    dp.callback_query.register(
-        process_subscription_year,
-        lambda
-            c: c.data == "subscription_year",
-    )
-    dp.callback_query.register(
-        process_subscription_all,
-        lambda
-            c: c.data == "subscription_all",
     )

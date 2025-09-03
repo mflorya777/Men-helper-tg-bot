@@ -4,6 +4,11 @@ from functools import lru_cache
 LANGUAGES = {
     "ru": "locales.texts_ru",
     "en": "locales.texts_en",
+    "de": "locales.texts_de",
+    "fr": "locales.texts_fr",
+    "it": "locales.texts_it",
+    "es": "locales.texts_es",
+    "pt": "locales.texts_pt",
 }
 
 

@@ -151,3 +151,11 @@ kb_confirm_18 = """
 kb_see_all = """
 모두 보기
 """
+
+kb_subscribtion_year = """
+1년 구독 신청하기 (30% 할인!)
+"""
+
+kb_subscribtion = """
+구독 신청하기
+"""

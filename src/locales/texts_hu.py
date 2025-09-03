@@ -152,3 +152,11 @@ kb_confirm_18 = """
 kb_see_all = """
 Összes megtekintése
 """
+
+kb_subscribtion_year = """
+Éves előfizetés (30% kedvezmény!)
+"""
+
+kb_subscribtion = """
+Előfizetés
+"""

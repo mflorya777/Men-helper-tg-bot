@@ -151,3 +151,11 @@ kb_confirm_18 = """
 kb_see_all = """
 すべてを見る
 """
+
+kb_subscribtion_year = """
+年間購読を申し込む（30%割引！）
+"""
+
+kb_subscribtion = """
+購読を申し込む
+"""

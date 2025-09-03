@@ -1,5 +1,4 @@
 import logging
-from openai import OpenAI
 
 from aiogram import types
 from aiogram.types import (
@@ -9,26 +8,21 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 
-from src.locales.i18n import get_locale
-from src.modules import (
-    keyboards,
+from src.clients.deepseek.deepseek_client import (
+    CLIENT_DEEPSEEK,
+    MODEL,
 )
+from src.locales.i18n import get_locale
 from src.fsm_models.fsm_models import AgeConfirm
+from src.modules.keyboards import (
+    get_confirm_kb,
+    get_start_kb,
+    get_girls_kb,
+    get_before_buy_kb,
+)
 
 
 _LOG = logging.getLogger("woman-tg-bot")
-
-# DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
-# DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
-# MODEL = getenv("MODEL")
-DEEPSEEK_API_KEY = "-"
-DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
-MODEL = "deepseek/deepseek-chat-v3.1:free"
-
-CLIENT_DEEPSEEK = OpenAI(
-    base_url=DEEPSEEK_API_URL,
-    api_key=DEEPSEEK_API_KEY,
-)
 
 
 # FIXME: Вместо флага из модели FSM сделать через БД Mongo
@@ -58,7 +52,9 @@ async def handler_start(
         await message.answer(
             locale.start,
             parse_mode="HTML",
-            reply_markup=keyboards.confirm_kb,
+            reply_markup=get_confirm_kb(
+                lang_code,
+            ),
         )
         await state.set_state(
             AgeConfirm.not_confirmed,
@@ -79,7 +75,9 @@ async def send_girls(
     await message.answer(
         locale.girls,
         parse_mode="HTML",
-        reply_markup=keyboards.girls_kb,
+        reply_markup=get_girls_kb(
+            lang_code,
+        )
     )
 
 
@@ -114,7 +112,9 @@ async def process_girl(
         await callback_query.message.answer(
             locale.before_buy,
             parse_mode="HTML",
-            reply_markup=keyboards.before_buy_kb,
+            reply_markup=get_before_buy_kb(
+                lang_code,
+            )
         )
     else:
         # Подписка есть, то показываем "контент"
@@ -222,7 +222,9 @@ async def handler_about_slash(
     await message.answer(
         locale.about_us,
         parse_mode="HTML",
-        reply_markup=keyboards.start_kb,
+        reply_markup=get_start_kb(
+            lang_code,
+        )
     )
 
 
@@ -240,7 +242,9 @@ async def handler_about_button(
     await message.answer(
         locale.about_us,
         parse_mode="HTML",
-        reply_markup=keyboards.start_kb,
+        reply_markup=get_start_kb(
+            lang_code,
+        )
     )
 
 
@@ -367,7 +371,9 @@ async def successful_payment_stars(
     # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
     await message.answer(
         f"{locale.subscription_activate_id_payment} {telegram_payment_charge_id}",
-        reply_markup=keyboards.start_kb,
+        reply_markup=get_start_kb(
+            lang_code,
+        )
     )
 
 

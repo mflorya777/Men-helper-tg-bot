@@ -56,6 +56,8 @@ def get_locale(
         "kb_about",
         "kb_confirm_18",
         "kb_see_all",
+        "kb_subscribtion_year",
+        "kb_subscribtion",
     ])
     return module
 

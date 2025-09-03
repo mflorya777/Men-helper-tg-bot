@@ -152,3 +152,11 @@ kb_confirm_18 = """
 kb_see_all = """
 Katso kaikki
 """
+
+kb_subscribtion_year = """
+Tilaa vuositilaus (30 % alennus!)
+"""
+
+kb_subscribtion = """
+Tilaa
+"""

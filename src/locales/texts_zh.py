@@ -152,3 +152,11 @@ kb_confirm_18 = """
 kb_see_all = """
 查看全部
 """
+
+kb_subscribtion_year = """
+辦理年度訂閱（享30%折扣！）
+"""
+
+kb_subscribtion = """
+辦理訂閱
+"""

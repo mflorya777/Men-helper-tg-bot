@@ -152,3 +152,11 @@ kb_confirm_18 = """
 kb_see_all = """
 Ver todos
 """
+
+kb_subscribtion_year = """
+Assine por um ano (30% de desconto!)
+"""
+
+kb_subscribtion = """
+Inscrever-se
+"""

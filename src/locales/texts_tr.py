@@ -152,3 +152,11 @@ kb_confirm_18 = """
 kb_see_all = """
 Tümünü görüntüle
 """
+
+kb_subscribtion_year = """
+Yıllık abonelik satın alın (30% indirim!)
+"""
+
+kb_subscribtion = """
+Abonelik oluştur
+"""

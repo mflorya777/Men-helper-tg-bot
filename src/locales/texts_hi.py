@@ -158,3 +158,11 @@ kb_confirm_18 = """
 kb_see_all = """
 सभी को देखें
 """
+
+kb_subscribtion_year = """
+एक वर्ष के लिए सदस्यता लें (30% छूट!)
+"""
+
+kb_subscribtion = """
+सदस्यता लें
+"""

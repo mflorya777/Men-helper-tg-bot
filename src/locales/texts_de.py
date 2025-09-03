@@ -150,3 +150,11 @@ kb_confirm_18 = """
 kb_see_all = """
 Alle anzeigen
 """
+
+kb_subscribtion_year = """
+Ein Jahresabonnement abschließen (30 % Rabatt!)
+"""
+
+kb_subscribtion = """
+Abonnement abschließen
+"""

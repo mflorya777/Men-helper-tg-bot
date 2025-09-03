@@ -152,3 +152,11 @@ kb_confirm_18 = """
 kb_see_all = """
 Visa alla
 """
+
+kb_subscribtion_year = """
+Prenumerera för ett år (30 % rabatt!)
+"""
+
+kb_subscribtion = """
+Prenumerera
+"""

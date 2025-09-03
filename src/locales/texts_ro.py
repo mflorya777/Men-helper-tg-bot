@@ -152,3 +152,11 @@ kb_confirm_18 = """
 kb_see_all = """
 Vezi toate
 """
+
+kb_subscribtion_year = """
+Abonați-vă pentru un an (Reducere de 30%!)
+"""
+
+kb_subscribtion = """
+Înscrieți-vă
+"""

@@ -8,10 +8,8 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 
-from src.clients.deepseek.deepseek_client import (
-    CLIENT_DEEPSEEK,
-    MODEL,
-)
+from src.clients.deepseek.deepseek_client import CLIENT_DEEPSEEK
+from src.config import MODEL
 from src.locales.i18n import get_locale
 from src.fsm_models.fsm_models import AgeConfirm
 from src.modules.keyboards import (

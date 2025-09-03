@@ -10,10 +10,13 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 
 from src.locales.i18n import get_locale
-from src.modules import (
-    keyboards,
-)
 from src.fsm_models.fsm_models import AgeConfirm
+from src.modules.keyboards import (
+    get_confirm_kb,
+    get_start_kb,
+    get_girls_kb,
+    get_before_buy_kb,
+)
 
 
 _LOG = logging.getLogger("woman-tg-bot")
@@ -58,7 +61,9 @@ async def handler_start(
         await message.answer(
             locale.start,
             parse_mode="HTML",
-            reply_markup=keyboards.confirm_kb,
+            reply_markup=get_confirm_kb(
+                lang_code,
+            ),
         )
         await state.set_state(
             AgeConfirm.not_confirmed,
@@ -79,7 +84,9 @@ async def send_girls(
     await message.answer(
         locale.girls,
         parse_mode="HTML",
-        reply_markup=keyboards.girls_kb,
+        reply_markup=get_girls_kb(
+            lang_code,
+        )
     )
 
 
@@ -114,7 +121,9 @@ async def process_girl(
         await callback_query.message.answer(
             locale.before_buy,
             parse_mode="HTML",
-            reply_markup=keyboards.before_buy_kb,
+            reply_markup=get_before_buy_kb(
+                lang_code,
+            )
         )
     else:
         # Подписка есть, то показываем "контент"
@@ -222,7 +231,9 @@ async def handler_about_slash(
     await message.answer(
         locale.about_us,
         parse_mode="HTML",
-        reply_markup=keyboards.start_kb,
+        reply_markup=get_start_kb(
+            lang_code,
+        )
     )
 
 
@@ -240,7 +251,9 @@ async def handler_about_button(
     await message.answer(
         locale.about_us,
         parse_mode="HTML",
-        reply_markup=keyboards.start_kb,
+        reply_markup=get_start_kb(
+            lang_code,
+        )
     )
 
 
@@ -367,7 +380,9 @@ async def successful_payment_stars(
     # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
     await message.answer(
         f"{locale.subscription_activate_id_payment} {telegram_payment_charge_id}",
-        reply_markup=keyboards.start_kb,
+        reply_markup=get_start_kb(
+            lang_code,
+        )
     )
 
 

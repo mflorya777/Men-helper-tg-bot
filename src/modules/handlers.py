@@ -1,5 +1,4 @@
 import logging
-from openai import OpenAI
 
 from aiogram import types
 from aiogram.types import (
@@ -9,6 +8,10 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 
+from src.clients.deepseek.deepseek_client import (
+    CLIENT_DEEPSEEK,
+    MODEL,
+)
 from src.locales.i18n import get_locale
 from src.fsm_models.fsm_models import AgeConfirm
 from src.modules.keyboards import (
@@ -20,18 +23,6 @@ from src.modules.keyboards import (
 
 
 _LOG = logging.getLogger("woman-tg-bot")
-
-# DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
-# DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
-# MODEL = getenv("MODEL")
-DEEPSEEK_API_KEY = "-"
-DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
-MODEL = "deepseek/deepseek-chat-v3.1:free"
-
-CLIENT_DEEPSEEK = OpenAI(
-    base_url=DEEPSEEK_API_URL,
-    api_key=DEEPSEEK_API_KEY,
-)
 
 
 # FIXME: Вместо флага из модели FSM сделать через БД Mongo

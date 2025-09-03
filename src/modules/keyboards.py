@@ -5,12 +5,14 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
+from src.locales import texts_ru
+
 
 start_kb = ReplyKeyboardMarkup(
     keyboard=[
         [
-            KeyboardButton(text="❓ Помощь"),
-            KeyboardButton(text="ℹ️ Обо мне"),
+            KeyboardButton(text=texts_ru.kb_help),
+            KeyboardButton(text=texts_ru.kb_about),
         ],
     ],
     resize_keyboard=True,
@@ -20,7 +22,7 @@ confirm_kb = InlineKeyboardMarkup(
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="🔞 Я старше 18 лет, давай начнем",
+                    text=texts_ru.kb_confirm_18,
                     callback_data="confirm_18"
                 ),
             ]
@@ -31,25 +33,25 @@ girls_kb = InlineKeyboardMarkup(
     inline_keyboard=[
         [
             InlineKeyboardButton(
-                text="💃 Гера",
+                text=f"💃 {texts_ru.girl_name_gera}",
                 callback_data="girl_hera",
             ),
             InlineKeyboardButton(
-                text="👠 Ева",
+                text=f"👠 {texts_ru.girl_name_eva}",
                 callback_data="girl_eva",
             ),
             InlineKeyboardButton(
-                text="👸🏻 Вероника",
+                text=f"👸🏻 {texts_ru.girl_name_veronika}",
                 callback_data="girl_veronika",
             ),
             InlineKeyboardButton(
-                text="👩🏻‍🦰 Кейт",
+                text=f"👩🏻‍🦰{texts_ru.girl_name_kate}",
                 callback_data="girl_kate",
             ),
         ],
         [
             InlineKeyboardButton(
-                text="✨ Посмотреть всех",
+                text=f"✨ {texts_ru.kb_see_all}",
                 callback_data="see_all_girls",
             )
         ]

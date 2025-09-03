@@ -1,5 +1,4 @@
 import logging
-from os import getenv
 from openai import OpenAI
 
 from aiogram import types
@@ -10,9 +9,9 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 
+from src.locales.i18n import get_locale
 from src.modules import (
     keyboards,
-    texts,
 )
 from src.fsm_models.fsm_models import AgeConfirm
 
@@ -22,11 +21,11 @@ _LOG = logging.getLogger("woman-tg-bot")
 # DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
 # DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
 # MODEL = getenv("MODEL")
-DEEPSEEK_API_KEY = "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"
+DEEPSEEK_API_KEY = "-"
 DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
 MODEL = "deepseek/deepseek-chat-v3.1:free"
 
-client = OpenAI(
+CLIENT_DEEPSEEK = OpenAI(
     base_url=DEEPSEEK_API_URL,
     api_key=DEEPSEEK_API_KEY,
 )
@@ -40,6 +39,14 @@ async def handler_start(
     """
     Хэндлер старта бота.
     """
+    lang_code = message.from_user.language_code
+    _LOG.info(
+        f"Язык в Телеграме: {message.from_user.language_code}"
+    )
+    locale = get_locale(
+        lang_code,
+    )
+
     current_state = await state.get_state()
     if current_state == AgeConfirm.confirmed:
         # Уже подтверждал возраст, то сразу кидаем к девушкам
@@ -49,7 +56,7 @@ async def handler_start(
     else:
         # Первый раз, то спрашиваем подтверждение
         await message.answer(
-            texts.start,
+            locale.start,
             parse_mode="HTML",
             reply_markup=keyboards.confirm_kb,
         )
@@ -64,8 +71,13 @@ async def send_girls(
     """
     Функция вывода текста и кнопок с девушками.
     """
+    lang_code = message.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     await message.answer(
-        texts.girls,
+        locale.girls,
         parse_mode="HTML",
         reply_markup=keyboards.girls_kb,
     )
@@ -92,10 +104,15 @@ async def process_girl(
     data = await state.get_data()
     has_subscription = data.get("has_subscription", False)
 
+    lang_code = callback_query.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     if not has_subscription:
         # Подписки нет, то показываем текст о покупке
         await callback_query.message.answer(
-            texts.before_buy,
+            locale.before_buy,
             parse_mode="HTML",
             reply_markup=keyboards.before_buy_kb,
         )
@@ -103,7 +120,7 @@ async def process_girl(
         # Подписка есть, то показываем "контент"
         girl_name = callback_query.data.split("_")[1]  # например, "hera"
         await callback_query.message.answer(
-            f"Ты выбрал девушку: <b>{girl_name.capitalize()}</b> 😉",
+            f"{locale.choose_girl} <b>{girl_name.capitalize()}</b> 😉",
             parse_mode="HTML",
         )
 
@@ -113,25 +130,30 @@ async def process_girl(
 async def process_see_all_girls(
     callback_query: types.CallbackQuery,
 ):
+    lang_code = callback_query.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     girls_data = [
         {
-            "name": texts.girl_name_gera,
-            "text": texts.girl_description_gera,
+            "name": locale.girl_name_gera,
+            "text": locale.girl_description_gera,
             "photo": "static/images/girl_1.jpg",
         },
         {
-            "name": texts.girl_name_eva,
-            "text": texts.girl_description_eva,
+            "name": locale.girl_name_eva,
+            "text": locale.girl_description_eva,
             "photo": "static/images/girl_2.jpg",
         },
         {
-            "name": texts.girl_name_veronika,
-            "text": texts.girl_description_veronika,
+            "name": locale.girl_name_veronika,
+            "text": locale.girl_description_veronika,
             "photo": "static/images/girl_3.jpg",
         },
         {
-            "name": texts.girl_name_kate,
-            "text": texts.girl_description_kate,
+            "name": locale.girl_name_kate,
+            "text": locale.girl_description_kate,
             "photo": "static/images/girl_4.jpg",
         },
     ]
@@ -153,12 +175,17 @@ async def process_subscription_year(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
+    lang_code = callback_query.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     # Сохраняем флаг подписки
     await state.update_data(
         has_subscription=True,
     )
     await callback_query.message.answer(
-        texts.subscription_activate,
+        locale.subscription_year_activate,
     )
     await callback_query.answer()
 
@@ -167,11 +194,16 @@ async def process_subscription_all(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
+    lang_code = callback_query.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     await state.update_data(
         has_subscription=True,
     )
     await callback_query.message.answer(
-        "✅ Подписка активирована!",
+        locale.subscription_activate,
     )
     await callback_query.answer()
 
@@ -182,8 +214,13 @@ async def handler_about_slash(
     """
     Хэндлер со слэшем о боте: /about.
     """
+    lang_code = message.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     await message.answer(
-        texts.about_us,
+        locale.about_us,
         parse_mode="HTML",
         reply_markup=keyboards.start_kb,
     )
@@ -195,8 +232,13 @@ async def handler_about_button(
     """
     Хэндлер для кнопки о боте.
     """
+    lang_code = message.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     await message.answer(
-        texts.about_us,
+        locale.about_us,
         parse_mode="HTML",
         reply_markup=keyboards.start_kb,
     )
@@ -208,8 +250,13 @@ async def handler_help_slash(
     """
     Хэндлер со слэшем помощи бота: /help.
     """
+    lang_code = message.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     await message.answer(
-        texts.helping,
+        locale.helping,
         parse_mode="HTML",
     )
 
@@ -220,8 +267,13 @@ async def handler_help_button(
     """
     Хэндлер для кнопки о помощи бота.
     """
+    lang_code = message.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     await message.answer(
-        texts.helping,
+        locale.helping,
         parse_mode="HTML",
     )
 
@@ -234,31 +286,36 @@ async def buy_stars(
     Функция отправки счета на Telegram Stars.
     plan: 'month' или 'year'.
     """
+    lang_code = callback_query.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     if plan == "month":
         prices = [LabeledPrice(
-            label=texts.subscription_month,
+            label=locale.subscription_month,
             # FIXME: Поменять сумму
             amount=1,  # 499
         )]
         payload = "premium_1_month"
-        title = texts.subscription_month
+        title = locale.subscription_month
     elif plan == "year":
         prices = [LabeledPrice(
-            label=texts.subscription_year,
+            label=locale.subscription_year,
             # FIXME: Поменять сумму
             amount=2,  # 4190
         )]
         payload = "premium_1_year"
-        title = texts.subscription_year
+        title = locale.subscription_year
     else:
         await callback_query.answer(
-            texts.subscription_error,
+            locale.subscription_error,
         )
         return
 
     await callback_query.message.answer_invoice(
         title=title,
-        description=texts.access_functions_in_bot,
+        description=locale.access_functions_in_bot,
         payload=payload,
         provider_token="",
         currency="XTR",
@@ -297,6 +354,11 @@ async def successful_payment_stars(
     payment = message.successful_payment
     telegram_payment_charge_id = payment.telegram_payment_charge_id
 
+    lang_code = message.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     # Сохраняем флаг подписки в FSM
     await state.update_data(
         has_subscription=True,
@@ -304,7 +366,7 @@ async def successful_payment_stars(
 
     # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
     await message.answer(
-        f"{texts.subscription_activate_id_payment} {telegram_payment_charge_id}",
+        f"{locale.subscription_activate_id_payment} {telegram_payment_charge_id}",
         reply_markup=keyboards.start_kb,
     )
 
@@ -317,7 +379,7 @@ async def call_deepseek(
     DeepSeek и возвращает ответ.
     """
     try:
-        completion = client.chat.completions.create(
+        completion = CLIENT_DEEPSEEK.chat.completions.create(
             model=MODEL,
             messages=[
                 {
@@ -351,16 +413,21 @@ async def handler_dep(
     Функция обрабатывает команду /dep, отправляет текст
     пользователя в DeepSeek и возвращает ответ в чат.
     """
+    lang_code = message.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
     user_text = message.text.split(maxsplit=1)
     if len(user_text) < 2:
         await message.answer(
-            texts.example_talk_with_bot,
+            locale.example_talk_with_bot,
         )
         return
 
     query = user_text[1]
     waiting = await message.answer(
-        texts.thinking_bot,
+        locale.thinking_bot,
     )
 
     response = await call_deepseek(query)

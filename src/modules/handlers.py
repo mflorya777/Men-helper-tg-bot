@@ -22,7 +22,7 @@ _LOG = logging.getLogger("woman-tg-bot")
 # DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
 # DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
 # MODEL = getenv("MODEL")
-
+DEEPSEEK_API_KEY = "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"
 DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
 MODEL = "deepseek/deepseek-chat-v3.1:free"
 
@@ -304,7 +304,7 @@ async def successful_payment_stars(
 
     # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
     await message.answer(
-        f"✅ Подписка успешно оформлена! ID платежа: {telegram_payment_charge_id}",
+        f"{texts.subscription_activate_id_payment} {telegram_payment_charge_id}",
         reply_markup=keyboards.start_kb,
     )
 

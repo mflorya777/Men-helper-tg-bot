@@ -111,6 +111,10 @@ subscription_activate = """
 ✅ Подписка на год активирована!
 """
 
+subscription_activate_id_payment = """
+✅ Подписка успешно оформлена! ID платежа:
+"""
+
 example_talk_with_bot = """
 Укажите текст после команды, пример: /dep Как дела?
 """

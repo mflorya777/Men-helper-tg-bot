@@ -22,7 +22,7 @@ _LOG = logging.getLogger("woman-tg-bot")
 # DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
 # DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
 # MODEL = getenv("MODEL")
-DEEPSEEK_API_KEY = "api_key"
+
 DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
 MODEL = "deepseek/deepseek-chat-v3.1:free"
 
@@ -43,7 +43,9 @@ async def handler_start(
     current_state = await state.get_state()
     if current_state == AgeConfirm.confirmed:
         # Уже подтверждал возраст, то сразу кидаем к девушкам
-        await send_girls(message)
+        await send_girls(
+            message,
+        )
     else:
         # Первый раз, то спрашиваем подтверждение
         await message.answer(
@@ -113,23 +115,23 @@ async def process_see_all_girls(
 ):
     girls_data = [
         {
-            "name": "Гера",
-            "text": "💃 Это Гера — загадочная и страстная!",
+            "name": texts.girl_name_gera,
+            "text": texts.girl_description_gera,
             "photo": "static/images/girl_1.jpg",
         },
         {
-            "name": "Ева",
-            "text": "👠 Ева — нежная, но с огоньком!",
+            "name": texts.girl_name_eva,
+            "text": texts.girl_description_eva,
             "photo": "static/images/girl_2.jpg",
         },
         {
-            "name": "Вероника",
-            "text": "👸🏻 Вероника — настоящая принцесса!",
+            "name": texts.girl_name_veronika,
+            "text": texts.girl_description_veronika,
             "photo": "static/images/girl_3.jpg",
         },
         {
-            "name": "Кейт",
-            "text": "👩🏻‍🦰 Кейт — горячая с мягким характером!",
+            "name": texts.girl_name_kate,
+            "text": texts.girl_description_kate,
             "photo": "static/images/girl_4.jpg",
         },
     ]
@@ -156,7 +158,7 @@ async def process_subscription_year(
         has_subscription=True,
     )
     await callback_query.message.answer(
-        "✅ Подписка на год активирована!",
+        texts.subscription_activate,
     )
     await callback_query.answer()
 
@@ -234,27 +236,29 @@ async def buy_stars(
     """
     if plan == "month":
         prices = [LabeledPrice(
-            label="Подписка Premium на месяц",
+            label=texts.subscription_month,
             # FIXME: Поменять сумму
             amount=1,  # 499
         )]
         payload = "premium_1_month"
-        title = "Подписка Premium (Месяц)"
+        title = texts.subscription_month
     elif plan == "year":
         prices = [LabeledPrice(
-            label="Подписка Premium на год",
+            label=texts.subscription_year,
             # FIXME: Поменять сумму
             amount=2,  # 4190
         )]
         payload = "premium_1_year"
-        title = "Подписка Premium (Год)"
+        title = texts.subscription_year
     else:
-        await callback_query.answer("Неверный тип подписки!")
+        await callback_query.answer(
+            texts.subscription_error,
+        )
         return
 
     await callback_query.message.answer_invoice(
         title=title,
-        description="Доступ ко всем функциям бота",
+        description=texts.access_functions_in_bot,
         payload=payload,
         provider_token="",
         currency="XTR",
@@ -350,13 +354,13 @@ async def handler_dep(
     user_text = message.text.split(maxsplit=1)
     if len(user_text) < 2:
         await message.answer(
-            "Укажите текст после команды, пример: /dep Как дела?",
+            texts.example_talk_with_bot,
         )
         return
 
     query = user_text[1]
     waiting = await message.answer(
-        "❤️✨ Думаю, сладкий...",
+        texts.thinking_bot,
     )
 
     response = await call_deepseek(query)

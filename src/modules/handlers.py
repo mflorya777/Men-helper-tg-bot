@@ -9,9 +9,12 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 
 from src.clients.deepseek.deepseek_client import CLIENT_DEEPSEEK
+from src.clients.mongo.mongo_client import (
+    get_user,
+    set_age_confirmed,
+)
 from src.config import MODEL
 from src.locales.i18n import get_locale
-from src.fsm_models.fsm_models import AgeConfirm
 from src.modules.decorators import require_age_confirmed
 from src.modules.keyboards import (
     get_confirm_kb,
@@ -24,7 +27,6 @@ from src.modules.keyboards import (
 _LOG = logging.getLogger("woman-tg-bot")
 
 
-# FIXME: Вместо флага из модели FSM сделать через БД Mongo
 async def handler_start(
     message: Message,
     state: FSMContext,
@@ -32,6 +34,7 @@ async def handler_start(
     """
     Хэндлер старта бота.
     """
+    user_id = message.from_user.id
     lang_code = message.from_user.language_code
     _LOG.info(
         f"Язык в Телеграме: {message.from_user.language_code}"
@@ -39,24 +42,23 @@ async def handler_start(
     locale = get_locale(
         lang_code,
     )
+    user = await get_user(
+        user_id,
+    )
 
-    current_state = await state.get_state()
-    if current_state == AgeConfirm.confirmed:
-        # Уже подтверждал возраст, то сразу кидаем к девушкам
+    if user and user.get("is_age_confirmed"):
+        # Уже подтверждал возраст
         await send_girls(
             message,
         )
     else:
-        # Первый раз, то спрашиваем подтверждение
+        # Первый раз — спрашиваем подтверждение
         await message.answer(
             locale.start,
             parse_mode="HTML",
             reply_markup=get_confirm_kb(
                 lang_code,
             ),
-        )
-        await state.set_state(
-            AgeConfirm.not_confirmed,
         )
 
 
@@ -82,11 +84,14 @@ async def send_girls(
 
 async def process_confirm_18(
     callback_query: types.CallbackQuery,
-    state: FSMContext,
 ):
-    await state.set_state(
-        AgeConfirm.confirmed,
-    )  # сохраняем статус
+    """
+    Обработчик подтверждения возраста.
+    """
+    user_id = callback_query.from_user.id
+    await set_age_confirmed(
+        user_id,
+    )
     await send_girls(
         callback_query.message,
     )
@@ -97,9 +102,15 @@ async def process_girl(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    # Достаём из FSM флаг подписки
-    data = await state.get_data()
-    has_subscription = data.get("has_subscription", False)
+    """
+    Функция-обработчик выбора девушки.
+    """
+    user_id = callback_query.from_user.id
+    user = await get_user(
+        user_id,
+    )
+
+    has_subscription = user.get("has_subscription", False)
 
     lang_code = callback_query.from_user.language_code
     locale = get_locale(
@@ -116,6 +127,7 @@ async def process_girl(
             )
         )
     else:
+        # FIXME: исправить ошибку, что когда уже купил подписку, чтобы показывался именно этот текст
         # Подписка есть, то показываем "контент"
         girl_name = callback_query.data.split("_")[1]  # например, "hera"
         await callback_query.message.answer(
@@ -245,6 +257,7 @@ async def handler_help_button(
     )
 
 
+# FIXME: исправить ошибку, что если подписка уже куплена, то её нельзя снова купить
 async def buy_stars(
     callback_query: types.CallbackQuery,
     plan: str = "month",
@@ -259,18 +272,20 @@ async def buy_stars(
     )
 
     if plan == "month":
-        prices = [LabeledPrice(
-            label=locale.subscription_month,
-            # FIXME: Поменять сумму
-            amount=1,  # 499
+        prices = [
+            LabeledPrice(
+                label=locale.subscription_month,
+                # FIXME: Поменять сумму
+                amount=1,  # 499
         )]
         payload = "premium_1_month"
         title = locale.subscription_month
     elif plan == "year":
-        prices = [LabeledPrice(
-            label=locale.subscription_year,
-            # FIXME: Поменять сумму
-            amount=2,  # 4190
+        prices = [
+            LabeledPrice(
+                label=locale.subscription_year,
+                # FIXME: Поменять сумму
+                amount=2,  # 4190
         )]
         payload = "premium_1_year"
         title = locale.subscription_year

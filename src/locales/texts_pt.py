@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ A assinatura foi concluída com sucesso! ID do pagamento:
 """
 
+error_payment = """
+Algo correu mal durante o pagamento...
+"""
+
+decorator_confirm_18 = """
+⚠️ Confirme primeiro a sua idade!
+"""
+
 example_talk_with_bot = """
 Indique o texto após o comando, exemplo: /dep Como está?
 """

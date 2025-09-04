@@ -133,6 +133,14 @@ example_talk_with_bot = """
 Kirjoita teksti komennon jälkeen, esimerkki: /dep Miten menee?
 """
 
+error_payment = """
+Maksussa tapahtui virhe...
+"""
+
+decorator_confirm_18 = """
+⚠️ Vahvista ensin ikäsi!
+"""
+
 thinking_bot = """
 ❤️✨ Luulen, että se on makea...
 """

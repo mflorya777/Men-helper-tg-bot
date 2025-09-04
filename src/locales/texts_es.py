@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ ¡Suscripción completada con éxito! ID de pago:
 """
 
+error_payment = """
+Algo salió mal durante el pago...
+"""
+
+decorator_confirm_18 = """
+⚠️ ¡Primero confirma tu edad!
+"""
+
 example_talk_with_bot = """
 Escribe el texto después del comando, por ejemplo: /dep ¿Qué tal?
 """

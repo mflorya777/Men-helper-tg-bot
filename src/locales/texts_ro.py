@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ Abonamentul a fost înregistrat cu succes! ID-ul plății:
 """
 
+error_payment = """
+Ceva nu a funcționat corect la plată...
+"""
+
+decorator_confirm_18 = """
+⚠️ Confirmați mai întâi vârsta!
+"""
+
 example_talk_with_bot = """
 Introduceți textul după comandă, exemplu: /dep Ce mai faci?
 """

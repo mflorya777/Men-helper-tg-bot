@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ Prenumerationen har slutförts! Betalnings-ID:
 """
 
+error_payment = """
+Något gick fel vid betalningen...
+"""
+
+decorator_confirm_18 = """
+⚠️ Bekräfta först din ålder!
+"""
+
 example_talk_with_bot = """
 Skriv in texten efter kommandot, till exempel: /dep Hur mår du?
 """

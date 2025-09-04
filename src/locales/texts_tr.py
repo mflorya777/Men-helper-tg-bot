@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ Abonelik başarıyla tamamlandı! Ödeme kimliği:
 """
 
+error_payment = """
+Ödeme sırasında bir sorun oluştu...
+"""
+
+decorator_confirm_18 = """
+⚠️ Önce yaşınızı onaylayın!
+"""
+
 example_talk_with_bot = """
 Komutun ardından metni girin, örnek: /dep Nasılsın?
 """

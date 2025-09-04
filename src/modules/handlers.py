@@ -8,12 +8,11 @@ from aiogram.types import (
 )
 from aiogram.fsm.context import FSMContext
 
-from src.clients.deepseek.deepseek_client import (
-    CLIENT_DEEPSEEK,
-    MODEL,
-)
+from src.clients.deepseek.deepseek_client import CLIENT_DEEPSEEK
+from src.config import MODEL
 from src.locales.i18n import get_locale
 from src.fsm_models.fsm_models import AgeConfirm
+from src.modules.decorators import require_age_confirmed
 from src.modules.keyboards import (
     get_confirm_kb,
     get_start_kb,
@@ -169,45 +168,7 @@ async def process_see_all_girls(
     await callback_query.answer()
 
 
-# TODO: Сделать обработку покупки через звезды в Телеграм
-# Обработка покупки (пока заглушка)
-async def process_subscription_year(
-    callback_query: types.CallbackQuery,
-    state: FSMContext,
-):
-    lang_code = callback_query.from_user.language_code
-    locale = get_locale(
-        lang_code,
-    )
-
-    # Сохраняем флаг подписки
-    await state.update_data(
-        has_subscription=True,
-    )
-    await callback_query.message.answer(
-        locale.subscription_year_activate,
-    )
-    await callback_query.answer()
-
-
-async def process_subscription_all(
-    callback_query: types.CallbackQuery,
-    state: FSMContext,
-):
-    lang_code = callback_query.from_user.language_code
-    locale = get_locale(
-        lang_code,
-    )
-
-    await state.update_data(
-        has_subscription=True,
-    )
-    await callback_query.message.answer(
-        locale.subscription_activate,
-    )
-    await callback_query.answer()
-
-
+@require_age_confirmed
 async def handler_about_slash(
     message: Message,
 ) -> None:
@@ -248,8 +209,10 @@ async def handler_about_button(
     )
 
 
+@require_age_confirmed
 async def handler_help_slash(
     message: Message,
+    state: FSMContext,
 ) -> None:
     """
     Хэндлер со слэшем помощи бота: /help.
@@ -335,10 +298,18 @@ async def pre_checkout_stars(
     """
     Функция о предварительном подтверждении оплаты.
     """
-    if pre_checkout_query.invoice_payload != "premium_1_month":
+    lang_code = pre_checkout_query.from_user.language_code
+    locale = get_locale(
+        lang_code,
+    )
+
+    if pre_checkout_query.invoice_payload not in [
+        "premium_1_month",
+        "premium_1_year",
+    ]:
         await pre_checkout_query.answer(
             ok=False,
-            error_message="Что-то пошло не так...",
+            error_message=locale.error_payment,
         )
     else:
         await pre_checkout_query.answer(
@@ -412,17 +383,32 @@ async def call_deepseek(
         return f"Ошибка API: {e}"
 
 
+@require_age_confirmed
 async def handler_dep(
     message: types.Message,
+    state: FSMContext,
 ):
     """
     Функция обрабатывает команду /dep, отправляет текст
     пользователя в DeepSeek и возвращает ответ в чат.
+    Доступ только при активной подписке (на месяц или год).
     """
     lang_code = message.from_user.language_code
     locale = get_locale(
         lang_code,
     )
+
+    data = await state.get_data()
+    has_subscription = data.get("has_subscription", False)
+
+    if not has_subscription:
+        await message.answer(
+            locale.before_buy,
+            reply_markup=get_before_buy_kb(
+                lang_code,
+            ),
+        )
+        return
 
     user_text = message.text.split(maxsplit=1)
     if len(user_text) < 2:

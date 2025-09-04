@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ A feliratkozás sikeresen megtörtént! Fizetési azonosító:
 """
 
+error_payment = """
+Valami probléma történt a fizetés során...
+"""
+
+decorator_confirm_18 = """
+⚠️ Először igazolja életkorát!
+"""
+
 example_talk_with_bot = """
 Írja be a parancs utáni szöveget, példa: /dep Hogy vagy?
 """

@@ -130,6 +130,14 @@ subscription_activate_id_payment = """
 ✅ L'abonnement a été souscrit avec succès ! Identifiant du paiement :
 """
 
+error_payment = """
+Quelque chose s'est mal passé lors du paiement...
+"""
+
+decorator_confirm_18 = """
+⚠️ Confirmez d'abord votre âge !
+"""
+
 example_talk_with_bot = """
 Indiquez le texte après la commande, exemple : /dep Comment ça va ?
 """

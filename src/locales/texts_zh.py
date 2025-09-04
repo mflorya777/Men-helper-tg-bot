@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ 訂閱已成功完成！付款ID：
 """
 
+error_payment = """
+付款時發生問題...
+"""
+
+decorator_confirm_18 = """
+⚠️ 請先確認年齡！
+"""
+
 example_talk_with_bot = """
 請在指令後輸入文字，範例：/dep 你好嗎？
 """

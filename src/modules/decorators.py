@@ -1,9 +1,8 @@
 from functools import wraps
 
-from aiogram.fsm.context import FSMContext
 from aiogram import types
 
-from src.fsm_models.fsm_models import AgeConfirm
+from src.clients.mongo.mongo_client import get_user
 from src.locales.i18n import get_locale
 
 
@@ -13,22 +12,27 @@ def require_age_confirmed(
     @wraps(handler)
     async def wrapper(
         event,
-        state: FSMContext = None,
         *args,
         **kwargs,
     ):
         if isinstance(event, types.Message):
+            user_id = event.from_user.id
             lang_code = event.from_user.language_code
         elif isinstance(event, types.CallbackQuery):
+            user_id = event.from_user.id
             lang_code = event.from_user.language_code
         else:
             lang_code = "ru"
+            user_id = None
 
-        locale = get_locale(lang_code)
+        locale = get_locale(
+            lang_code,
+        )
 
-        current_state = await state.get_state() if state else None
-
-        if current_state != AgeConfirm.confirmed:
+        user = await get_user(
+            user_id,
+        )
+        if not user or not user.get("is_age_confirmed", False):
             if isinstance(event, types.Message):
                 await event.answer(
                     locale.decorator_confirm_18,
@@ -39,10 +43,11 @@ def require_age_confirmed(
                     show_alert=True,
                 )
             return
+
         return await handler(
             event,
-            state,
             *args,
             **kwargs,
         )
+
     return wrapper

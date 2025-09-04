@@ -276,3 +276,28 @@ restart_backend_local: stop_stack run_backend_local
 
 logs_backend:
 	docker logs -f woman-tg-bot
+
+clean:  ## Очистить временные файлы, кэши и .pyc
+	find . -name '*.pyc' -delete
+	find . -name '__pycache__' -delete
+
+prune:  ## Очистить dangling-образы и кэш Docker
+	docker system prune -f
+	docker volume prune -f
+
+reset: stop_stack prune clean  ## Полный сброс окружения
+
+check: \
+	mypy_local \
+	ruff_check_local \
+	ruff_format_check_local \
+	test_local  ## Запуск всех проверок
+
+shell:  ## Зайти в контейнер backend-а
+	docker exec -it woman-tg-bot bash
+
+ps:  ## Посмотреть контейнеры проекта
+	docker compose -f compose/docker-compose.$(ENV).yaml ps
+
+logs:  ## Логи всех сервисов
+	docker compose -f compose/docker-compose.$(ENV).yaml logs -f

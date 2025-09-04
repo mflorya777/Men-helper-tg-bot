@@ -412,15 +412,29 @@ async def call_deepseek(
 
 async def handler_dep(
     message: types.Message,
+    state: FSMContext,
 ):
     """
     Функция обрабатывает команду /dep, отправляет текст
     пользователя в DeepSeek и возвращает ответ в чат.
+    Доступ только при активной подписке (на месяц или год).
     """
     lang_code = message.from_user.language_code
     locale = get_locale(
         lang_code,
     )
+
+    data = await state.get_data()
+    has_subscription = data.get("has_subscription", False)
+
+    if not has_subscription:
+        await message.answer(
+            locale.before_buy,
+            reply_markup=get_before_buy_kb(
+                lang_code,
+            ),
+        )
+        return
 
     user_text = message.text.split(maxsplit=1)
     if len(user_text) < 2:

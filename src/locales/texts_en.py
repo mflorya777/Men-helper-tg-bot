@@ -123,6 +123,14 @@ subscription_activate_id_payment = """
 ✅ Subscription successfully completed! Payment ID:
 """
 
+error_payment = """
+Something went wrong with the payment...
+"""
+
+decorator_confirm_18 = """
+⚠️ Please confirm your age first!
+"""
+
 example_talk_with_bot = """
 Enter text after the command, example: /dep How are you?
 """

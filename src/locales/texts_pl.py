@@ -129,6 +129,14 @@ subscription_activate_id_payment = """
 ✅ Subskrypcja została pomyślnie zrealizowana! Numer płatności:
 """
 
+error_payment = """
+Coś poszło nie tak podczas płatności...
+"""
+
+decorator_confirm_18 = """
+⚠️ Najpierw potwierdź swój wiek!
+"""
+
 example_talk_with_bot = """
 Wpisz tekst po poleceniu, przykład: /dep Jak się masz?
 """

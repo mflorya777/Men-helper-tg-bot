@@ -127,6 +127,14 @@ subscription_activate_id_payment = """
 ✅ Das Abonnement wurde erfolgreich abgeschlossen! Zahlungs-ID:
 """
 
+error_payment = """
+Bei der Zahlung ist etwas schiefgelaufen...
+"""
+
+decorator_confirm_18 = """
+⚠️ Bitte bestätigen Sie zunächst Ihr Alter!
+"""
+
 example_talk_with_bot = """
 Geben Sie den Text nach dem Befehl ein, Beispiel: /dep Wie geht es dir?
 """

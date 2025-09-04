@@ -58,6 +58,8 @@ def get_locale(
         "kb_see_all",
         "kb_subscribtion_year",
         "kb_subscribtion",
+        "error_payment",
+        "decorator_confirm_18",
     ])
     return module
 

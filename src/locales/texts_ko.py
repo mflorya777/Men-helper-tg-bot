@@ -128,6 +128,14 @@ subscription_activate_id_payment = """
 ✅ 구독이 성공적으로 완료되었습니다! 결제 ID:
 """
 
+error_payment = """
+결제 과정에서 문제가 발생했습니다...
+"""
+
+decorator_confirm_18 = """
+⚠️ 먼저 연령을 확인하세요!
+"""
+
 example_talk_with_bot = """
 명령어 뒤에 텍스트를 입력하세요, 예시: /dep 안녕?
 """

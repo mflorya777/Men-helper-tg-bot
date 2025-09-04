@@ -128,6 +128,14 @@ subscription_activate_id_payment = """
 ✅ 購読が正常に完了しました！お支払いID：
 """
 
+error_payment = """
+お支払いに問題が発生しました...
+"""
+
+decorator_confirm_18 = """
+⚠️ まず年齢を確認してください！
+"""
+
 example_talk_with_bot = """
 コマンドの後にテキストを入力してください。例：/dep 調子はどう？
 """

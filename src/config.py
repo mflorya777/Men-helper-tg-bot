@@ -10,7 +10,11 @@ TOKEN = "7885048353:AAH-1ndPptp4JTTiL6gl0SAZ32UlqBzsdPI"
 # MODEL = getenv("MODEL")
 DEEPSEEK_API_KEY = "-"
 DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
-MODEL = "deepseek/deepseek-chat-v3.1:free"
+MODELS = [
+    "deepseek/deepseek-chat-v3.1:free",
+    "deepseek/deepseek-chat-v3.1",
+    "gpt-4o-mini",
+]
 
 load_dotenv()
 

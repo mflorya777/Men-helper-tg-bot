@@ -7,13 +7,35 @@ TOKEN = "7885048353:AAH-1ndPptp4JTTiL6gl0SAZ32UlqBzsdPI"
 
 # DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
 # DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")
-# MODEL = getenv("MODEL")
+# MODELS = getenv("MODEL", "").split()
 DEEPSEEK_API_KEY = "-"
 DEEPSEEK_API_URL = "https://openrouter.ai/api/v1"
 MODELS = [
     "deepseek/deepseek-chat-v3.1:free",
-    "deepseek/deepseek-chat-v3.1",
-    "gpt-4o-mini",
+    "openai/gpt-oss-120b:free",
+    "openai/gpt-oss-20b:free",
+    "z-ai/glm-4.5-air:free",
+    "qwen/qwen3-coder:free",
+    "moonshotai/kimi-k2:free",
+    "cognitivecomputations/dolphin-mistral-24b-venice-edition:free",
+    "google/gemma-3n-e2b-it:free",
+    "tencent/hunyuan-a13b-instruct:free",
+    "tngtech/deepseek-r1t2-chimera:free",
+    "mistralai/mistral-small-3.2-24b-instruct:free",
+    "moonshotai/kimi-dev-72b:free",
+    "deepseek/deepseek-r1-0528-qwen3-8b:free",
+    "deepseek/deepseek-r1-0528:free",
+    "mistralai/devstral-small-2505:free",
+    "google/gemma-3n-e4b-it:free",
+    "meta-llama/llama-3.3-8b-instruct:free",
+    "qwen/qwen3-4b:free",
+    "qwen/qwen3-30b-a3b:free",
+    "qwen/qwen3-8b:free",
+    "qwen/qwen3-14b:free",
+    "tngtech/deepseek-r1t-chimera:free",
+    "deepseek/deepseek-chat-v3-0324:free",
+    "deepseek/deepseek-r1-distill-llama-70b:free",
+    "deepseek/deepseek-r1:free",
 ]
 
 load_dotenv()

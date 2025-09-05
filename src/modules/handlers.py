@@ -349,7 +349,6 @@ async def pre_checkout_stars(
         )
 
 
-# FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
 async def successful_payment_stars(
     message: types.Message,
     state: FSMContext,
@@ -359,6 +358,7 @@ async def successful_payment_stars(
     """
     payment = message.successful_payment
     telegram_payment_charge_id = payment.telegram_payment_charge_id
+    payload = payment.invoice_payload
 
     lang_code = message.from_user.language_code
     locale = get_locale(
@@ -371,12 +371,28 @@ async def successful_payment_stars(
         user_id,
     )
     if user:
+        now = dt.datetime.now(tz=MOSCOW_TZ)
+        if payload == "premium_1_month":
+            expires = now + dt.timedelta(
+                days=30,
+            )
+        elif payload == "premium_1_year":
+            expires = now + dt.timedelta(
+                days=365,
+            )
+        else:
+            expires = now
+
+        await mongo_client.update_subscription_expires(
+            user,
+            expires,
+        )
+
         await mongo_client.update_subscription(
             user,
             True,
         )
 
-    # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
     await message.answer(
         f"{locale.subscription_activate_id_payment} {telegram_payment_charge_id}",
         reply_markup=get_start_kb(

@@ -44,8 +44,7 @@ class User(BaseModel):
         False,
         description="Есть ли активная подписка",
     )
-    # FIXME: Поменять на тип dt.datetime
-    subscription_expires_at: Optional[str] = Field(
+    subscription_expires_at: Optional[dt.datetime] = Field(
         None,
         description="Дата окончания подписки",
     )

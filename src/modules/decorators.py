@@ -37,7 +37,7 @@ def require_age_confirmed(
         user = await mongo_client.get_user(
             user_id,
         )
-        if not user or not user.get("is_age_confirmed", False):
+        if not user or not user.is_age_confirmed:
             if isinstance(event, types.Message):
                 await event.answer(
                     locale.decorator_confirm_18,
@@ -48,6 +48,9 @@ def require_age_confirmed(
                     show_alert=True,
                 )
             return
+
+        if "user" in handler.__annotations__:
+            kwargs["user"] = user
 
         return await handler(
             event,

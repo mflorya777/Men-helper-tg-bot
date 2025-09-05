@@ -1,10 +1,16 @@
 import logging
+from typing import Optional
+import datetime as dt
+
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from src.config import MongoConfig
+from src.models.mongo_models import User
 
 
 _LOG = logging.getLogger("woman-tg-bot")
+
+MOSCOW_TZ = dt.timezone(dt.timedelta(hours=3))
 
 
 class MongoClient:
@@ -54,26 +60,53 @@ class MongoClient:
 
     async def get_user(
         self,
-        user_id: int,
-    ):
-        return await self.users_collection.find_one(
+        tg_user_id: int,
+    ) -> Optional[User]:
+        doc = await self.users_collection.find_one(
             {
-                "_id": user_id,
+                "id": tg_user_id,
             }
         )
+        if not doc:
+            return None
+        return User(**doc)
 
     async def set_age_confirmed(
         self,
-        user_id: int,
+        user: User,
     ):
+        user.is_age_confirmed = True
+        now = dt.datetime.now(tz=MOSCOW_TZ)
+
+        if not user.created_at:
+            user.created_at = now
+        user.updated_at = now
+
+        user_dict = user.dict()
+
         await self.users_collection.update_one(
             {
-                "_id": user_id,
+                "id": user.id,
+            },
+            {
+                "$set": user_dict,
+            },
+            upsert=True
+        )
+
+    async def update_subscription(
+        self,
+        user: User,
+        has_subscription: bool,
+    ) -> None:
+        await self.users_collection.update_one(
+            {
+                "id": user.id,
             },
             {
                 "$set": {
-                    "is_age_confirmed": True,
-                },
+                    "has_subscription": has_subscription,
+                }
             },
             upsert=True,
         )

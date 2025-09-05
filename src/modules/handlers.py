@@ -437,15 +437,15 @@ async def call_deepseek(
     return "Сервисы перегружены или недоступны, попробуйте позже 💔"
 
 
-# FIXME: попробовать, чтобы общение было не через команду /dep
 @require_age_confirmed
-async def handler_dep(
+async def handler_chat(
     message: types.Message,
     user: User,
 ):
     """
-    Функция обрабатывает команду /dep, отправляет текст
-    пользователя в DeepSeek и возвращает ответ в чат.
+    Функция отправляет текст
+    пользователя в DeepSeek или другую ИИ модель
+    и возвращает ответ в чат.
     Доступ только при активной подписке (на месяц или год).
     """
     lang_code = message.from_user.language_code
@@ -464,19 +464,17 @@ async def handler_dep(
         )
         return
 
-    user_text = message.text.split(maxsplit=1)
-    if len(user_text) < 2:
-        await message.answer(
-            locale.example_talk_with_bot,
-        )
+    query = message.text.strip()
+    if not query:
         return
 
-    query = user_text[1]
     waiting = await message.answer(
         locale.thinking_bot,
     )
+    response = await call_deepseek(
+        query,
+    )
 
-    response = await call_deepseek(query)
     await waiting.edit_text(
-        f"{response}",
+        response,
     )

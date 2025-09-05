@@ -23,7 +23,7 @@ from src.modules.handlers import (
     handler_help_slash,
     handler_help_button,
     process_see_all_girls,
-    handler_dep,
+    handler_chat,
 )
 
 
@@ -97,8 +97,8 @@ async def register_handlers(
         F.data == "see_all_girls",
     )
     dp.message.register(
-        handler_dep,
-        Command("dep"),
+        handler_chat,
+        F.text,
     )
 
 

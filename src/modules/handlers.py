@@ -9,11 +9,11 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 
 from src.clients.deepseek.deepseek_client import CLIENT_DEEPSEEK
-from src.clients.mongo.mongo_client import (
-    get_user,
-    set_age_confirmed,
+from src.clients.mongo.mongo_client import MongoClient
+from src.config import (
+    MODEL,
+    MongoConfig,
 )
-from src.config import MODEL
 from src.locales.i18n import get_locale
 from src.modules.decorators import require_age_confirmed
 from src.modules.keyboards import (
@@ -25,6 +25,9 @@ from src.modules.keyboards import (
 
 
 _LOG = logging.getLogger("woman-tg-bot")
+
+config = MongoConfig()
+mongo_client = MongoClient(config)
 
 
 async def handler_start(
@@ -42,7 +45,7 @@ async def handler_start(
     locale = get_locale(
         lang_code,
     )
-    user = await get_user(
+    user = await mongo_client.get_user(
         user_id,
     )
 
@@ -88,14 +91,15 @@ async def process_confirm_18(
     """
     Обработчик подтверждения возраста.
     """
+    await callback_query.answer()
+
     user_id = callback_query.from_user.id
-    await set_age_confirmed(
+    await mongo_client.set_age_confirmed(
         user_id,
     )
     await send_girls(
         callback_query.message,
     )
-    await callback_query.answer()
 
 
 async def process_girl(
@@ -106,7 +110,7 @@ async def process_girl(
     Функция-обработчик выбора девушки.
     """
     user_id = callback_query.from_user.id
-    user = await get_user(
+    user = await mongo_client.get_user(
         user_id,
     )
 

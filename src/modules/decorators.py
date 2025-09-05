@@ -2,8 +2,13 @@ from functools import wraps
 
 from aiogram import types
 
-from src.clients.mongo.mongo_client import get_user
+from src.clients.mongo.mongo_client import MongoClient
+from src.config import MongoConfig
 from src.locales.i18n import get_locale
+
+
+config = MongoConfig()
+mongo_client = MongoClient(config)
 
 
 def require_age_confirmed(
@@ -29,7 +34,7 @@ def require_age_confirmed(
             lang_code,
         )
 
-        user = await get_user(
+        user = await mongo_client.get_user(
             user_id,
         )
         if not user or not user.get("is_age_confirmed", False):

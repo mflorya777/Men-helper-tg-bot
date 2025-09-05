@@ -107,7 +107,7 @@ async def process_confirm_18(
         has_subscription=False,
         subscription_expires_at=None,
         created_at=dt.datetime.now(tz=MOSCOW_TZ),
-        updated_at=None
+        updated_at=None,
     )
     await mongo_client.set_age_confirmed(
         user,
@@ -275,7 +275,6 @@ async def handler_help_button(
     )
 
 
-# FIXME: исправить ошибку, что если подписка уже куплена, то её нельзя снова купить
 async def buy_stars(
     callback_query: types.CallbackQuery,
     plan: str = "month",

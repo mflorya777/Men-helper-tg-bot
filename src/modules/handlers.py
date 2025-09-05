@@ -292,8 +292,7 @@ async def buy_stars(
         prices = [
             LabeledPrice(
                 label=locale.subscription_month,
-                # FIXME: Поменять сумму
-                amount=1,  # 499
+                amount=490,
         )]
         payload = "premium_1_month"
         title = locale.subscription_month
@@ -301,8 +300,7 @@ async def buy_stars(
         prices = [
             LabeledPrice(
                 label=locale.subscription_year,
-                # FIXME: Поменять сумму
-                amount=2,  # 2190
+                amount=2190,
         )]
         payload = "premium_1_year"
         title = locale.subscription_year

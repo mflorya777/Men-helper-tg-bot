@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 
 
 # TOKEN = getenv("BOT_TOKEN")
-TOKEN = "7885048353:AAH-1ndPptp4JTTiL6gl0SAZ32UlqBzsdPI"
+TOKEN = "8033100225:AAHEagsEsr7s4RtLY2RbyQONbTYNleIs4xQ"
 
 # DEEPSEEK_API_KEY = getenv("DEEPSEEK_API_KEY")
 # DEEPSEEK_API_URL = getenv("DEEPSEEK_API_URL")

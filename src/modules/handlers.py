@@ -1,4 +1,5 @@
 import logging
+import datetime as dt
 
 from aiogram import types
 from aiogram.types import (
@@ -9,12 +10,13 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 
 from src.clients.deepseek.deepseek_client import CLIENT_DEEPSEEK
-from src.clients.mongo.mongo_client import (
-    get_user,
-    set_age_confirmed,
+from src.clients.mongo.mongo_client import MongoClient
+from src.config import (
+    MODEL,
+    MongoConfig,
 )
-from src.config import MODEL
 from src.locales.i18n import get_locale
+from src.models.mongo_models import User
 from src.modules.decorators import require_age_confirmed
 from src.modules.keyboards import (
     get_confirm_kb,
@@ -25,6 +27,10 @@ from src.modules.keyboards import (
 
 
 _LOG = logging.getLogger("woman-tg-bot")
+
+config = MongoConfig()
+mongo_client = MongoClient(config)
+MOSCOW_TZ = dt.timezone(dt.timedelta(hours=3))
 
 
 async def handler_start(
@@ -42,11 +48,11 @@ async def handler_start(
     locale = get_locale(
         lang_code,
     )
-    user = await get_user(
+    user = await mongo_client.get_user(
         user_id,
     )
 
-    if user and user.get("is_age_confirmed"):
+    if user and user.is_age_confirmed:
         # Уже подтверждал возраст
         await send_girls(
             message,
@@ -88,14 +94,27 @@ async def process_confirm_18(
     """
     Обработчик подтверждения возраста.
     """
-    user_id = callback_query.from_user.id
-    await set_age_confirmed(
-        user_id,
+    await callback_query.answer()
+
+    user = User(
+        id=callback_query.from_user.id,
+        username=callback_query.from_user.username,
+        name=callback_query.from_user.first_name,
+        surname=callback_query.from_user.last_name,
+        father_name=None,
+        phone=None,
+        is_age_confirmed=True,
+        has_subscription=False,
+        subscription_expires_at=None,
+        created_at=dt.datetime.now(tz=MOSCOW_TZ),
+        updated_at=None,
+    )
+    await mongo_client.set_age_confirmed(
+        user,
     )
     await send_girls(
         callback_query.message,
     )
-    await callback_query.answer()
 
 
 async def process_girl(
@@ -106,11 +125,11 @@ async def process_girl(
     Функция-обработчик выбора девушки.
     """
     user_id = callback_query.from_user.id
-    user = await get_user(
+    user = await mongo_client.get_user(
         user_id,
     )
 
-    has_subscription = user.get("has_subscription", False)
+    has_subscription = user.has_subscription
 
     lang_code = callback_query.from_user.language_code
     locale = get_locale(
@@ -127,11 +146,10 @@ async def process_girl(
             )
         )
     else:
-        # FIXME: исправить ошибку, что когда уже купил подписку, чтобы показывался именно этот текст
         # Подписка есть, то показываем "контент"
         girl_name = callback_query.data.split("_")[1]  # например, "hera"
         await callback_query.message.answer(
-            f"{locale.choose_girl} <b>{girl_name.capitalize()}</b> 😉",
+            f"{locale.choose_girl} <b>{girl_name.capitalize()}</b> 🔥",
             parse_mode="HTML",
         )
 
@@ -257,7 +275,6 @@ async def handler_help_button(
     )
 
 
-# FIXME: исправить ошибку, что если подписка уже куплена, то её нельзя снова купить
 async def buy_stars(
     callback_query: types.CallbackQuery,
     plan: str = "month",
@@ -333,7 +350,6 @@ async def pre_checkout_stars(
 
 
 # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
-# TODO: Добавить сохранение уровня аккаунт (премиум или нет) через базу
 async def successful_payment_stars(
     message: types.Message,
     state: FSMContext,
@@ -349,10 +365,16 @@ async def successful_payment_stars(
         lang_code,
     )
 
-    # Сохраняем флаг подписки в FSM
-    await state.update_data(
-        has_subscription=True,
+    user_id = message.from_user.id
+
+    user = await mongo_client.get_user(
+        user_id,
     )
+    if user:
+        await mongo_client.update_subscription(
+            user,
+            True,
+        )
 
     # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
     await message.answer(
@@ -401,7 +423,7 @@ async def call_deepseek(
 @require_age_confirmed
 async def handler_dep(
     message: types.Message,
-    state: FSMContext,
+    user: User,
 ):
     """
     Функция обрабатывает команду /dep, отправляет текст
@@ -413,8 +435,7 @@ async def handler_dep(
         lang_code,
     )
 
-    data = await state.get_data()
-    has_subscription = data.get("has_subscription", False)
+    has_subscription = user.has_subscription
 
     if not has_subscription:
         await message.answer(

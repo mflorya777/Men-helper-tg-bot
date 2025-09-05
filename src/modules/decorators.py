@@ -2,8 +2,13 @@ from functools import wraps
 
 from aiogram import types
 
-from src.clients.mongo.mongo_client import get_user
+from src.clients.mongo.mongo_client import MongoClient
+from src.config import MongoConfig
 from src.locales.i18n import get_locale
+
+
+config = MongoConfig()
+mongo_client = MongoClient(config)
 
 
 def require_age_confirmed(
@@ -29,10 +34,10 @@ def require_age_confirmed(
             lang_code,
         )
 
-        user = await get_user(
+        user = await mongo_client.get_user(
             user_id,
         )
-        if not user or not user.get("is_age_confirmed", False):
+        if not user or not user.is_age_confirmed:
             if isinstance(event, types.Message):
                 await event.answer(
                     locale.decorator_confirm_18,
@@ -43,6 +48,9 @@ def require_age_confirmed(
                     show_alert=True,
                 )
             return
+
+        if "user" in handler.__annotations__:
+            kwargs["user"] = user
 
         return await handler(
             event,

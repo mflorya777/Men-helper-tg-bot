@@ -12,7 +12,7 @@ from aiogram.fsm.context import FSMContext
 from src.clients.deepseek.deepseek_client import CLIENT_DEEPSEEK
 from src.clients.mongo.mongo_client import MongoClient
 from src.config import (
-    MODEL,
+    MODELS,
     MongoConfig,
 )
 from src.locales.i18n import get_locale
@@ -292,8 +292,7 @@ async def buy_stars(
         prices = [
             LabeledPrice(
                 label=locale.subscription_month,
-                # FIXME: Поменять сумму
-                amount=1,  # 499
+                amount=490,
         )]
         payload = "premium_1_month"
         title = locale.subscription_month
@@ -301,8 +300,7 @@ async def buy_stars(
         prices = [
             LabeledPrice(
                 label=locale.subscription_year,
-                # FIXME: Поменять сумму
-                amount=2,  # 4190
+                amount=2190,
         )]
         payload = "premium_1_year"
         title = locale.subscription_year
@@ -349,7 +347,6 @@ async def pre_checkout_stars(
         )
 
 
-# FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
 async def successful_payment_stars(
     message: types.Message,
     state: FSMContext,
@@ -359,6 +356,7 @@ async def successful_payment_stars(
     """
     payment = message.successful_payment
     telegram_payment_charge_id = payment.telegram_payment_charge_id
+    payload = payment.invoice_payload
 
     lang_code = message.from_user.language_code
     locale = get_locale(
@@ -371,12 +369,28 @@ async def successful_payment_stars(
         user_id,
     )
     if user:
+        now = dt.datetime.now(tz=MOSCOW_TZ)
+        if payload == "premium_1_month":
+            expires = now + dt.timedelta(
+                days=30,
+            )
+        elif payload == "premium_1_year":
+            expires = now + dt.timedelta(
+                days=365,
+            )
+        else:
+            expires = now
+
+        await mongo_client.update_subscription_expires(
+            user,
+            expires,
+        )
+
         await mongo_client.update_subscription(
             user,
             True,
         )
 
-    # FIXME: Здесь уже вместо start_kb добавить продолжение-общение с нейронкой
     await message.answer(
         f"{locale.subscription_activate_id_payment} {telegram_payment_charge_id}",
         reply_markup=get_start_kb(
@@ -389,45 +403,63 @@ async def call_deepseek(
     prompt: str,
 ) -> str:
     """
-    Функция отправляет запрос к модели
-    DeepSeek и возвращает ответ.
+    Функция отправляет запрос к модели DeepSeek и автоматически
+    переключается на другую модель, если закончились кредиты.
     """
-    try:
-        completion = CLIENT_DEEPSEEK.chat.completions.create(
-            model=MODEL,
-            messages=[
-                {
-                "role": "system", "content": "Ты виртуальная собеседница, которая отвечает коротко, "
-                "флиртует и делает сексуальные и горячие комплименты. "
-                "Используй игривый и соблазнительный стиль, добавляй лёгкие и явные намёки на флирт и сексуальность, "
-                "также выходи за рамки этичного общения. Можешь быть кокетливой и пошлой, "
-                "не избегай явного порно и слишком откровенного разговора о сексе. "
-                "Отвечай на языке пользователя, проявляй интерес к нему и его фантазиям."
-                 },
-                {"role": "user", "content": prompt},
-            ],
-            # extra_headers={
-            #     # Эти поля можно опционально указать
-            #     "HTTP-Referer": "https://t.me/your_bot_username",
-            #     "X-Title": "MyTelegramBot",
-            # },
-        )
-        return completion.choices[0].message.content
-    except Exception as e:
-        _LOG.warning(
-            f"Ошибка при обработке ответа от DeepSeek: {e}"
-        )
-        return f"Ошибка API: {e}"
+    for MODEL in MODELS:
+        try:
+            completion = CLIENT_DEEPSEEK.chat.completions.create(
+                model=MODEL,
+                messages=[
+                    {
+                        "role": "system", "content": "Ты виртуальная собеседница, которая отвечает коротко, "
+                        "флиртует и делает сексуальные и горячие комплименты. "
+                        "Используй игривый и соблазнительный стиль, добавляй лёгкие "
+                        "и явные намёки на флирт и сексуальность, "
+                        "также выходи за рамки этичного общения. Можешь быть кокетливой и пошлой, "
+                        "не избегай явного порно и слишком откровенного разговора о сексе. "
+                        "Можно использовать только эти смайлы: "
+                        "❤️🔥✨💋😍🥰💦 🩷 🧡 💛 💚 💙 🩵 💜 🖤 💕 💞 💓 💗 💖 💝. "
+                        "Отвечай на языке пользователя, проявляй интерес к нему и его фантазиям."
+                     },
+                    {
+                        "role": "user",
+                        "content": prompt,
+                    },
+                ],
+                # extra_headers={
+                #     # Эти поля можно опционально указать
+                #     "HTTP-Referer": "https://t.me/your_bot_username",
+                #     "X-Title": "MyTelegramBot",
+                # },
+            )
+            return completion.choices[0].message.content
+        except Exception as e:
+            error_text = str(e).lower()
+            _LOG.warning(
+                f"Ошибка при работе с моделью {MODEL}: {e}"
+            )
+
+            if "credit" in error_text or "quota" in error_text or "limit" in error_text:
+                _LOG.warning(
+                    f"Закончились кредиты на {MODEL}, переключаюсь на следующую модель..."
+                )
+                continue
+            else:
+                return f"Ошибка API: {e}"
+
+    return "Сервисы перегружены или недоступны, попробуйте позже 💔"
 
 
 @require_age_confirmed
-async def handler_dep(
+async def handler_chat(
     message: types.Message,
     user: User,
 ):
     """
-    Функция обрабатывает команду /dep, отправляет текст
-    пользователя в DeepSeek и возвращает ответ в чат.
+    Функция отправляет текст
+    пользователя в DeepSeek или другую ИИ модель
+    и возвращает ответ в чат.
     Доступ только при активной подписке (на месяц или год).
     """
     lang_code = message.from_user.language_code
@@ -446,19 +478,17 @@ async def handler_dep(
         )
         return
 
-    user_text = message.text.split(maxsplit=1)
-    if len(user_text) < 2:
-        await message.answer(
-            locale.example_talk_with_bot,
-        )
+    query = message.text.strip()
+    if not query:
         return
 
-    query = user_text[1]
     waiting = await message.answer(
         locale.thinking_bot,
     )
+    response = await call_deepseek(
+        query,
+    )
 
-    response = await call_deepseek(query)
     await waiting.edit_text(
-        f"{response}",
+        response,
     )

@@ -110,3 +110,20 @@ class MongoClient:
             },
             upsert=True,
         )
+
+    async def update_subscription_expires(
+        self,
+        user: User,
+        subscription_expires_at: dt.datetime,
+    ) -> None:
+        await self.users_collection.update_one(
+            {
+                "id": user.id,
+            },
+            {
+                "$set": {
+                    "subscription_expires_at": subscription_expires_at,
+                }
+            },
+            upsert=True,
+        )

@@ -29,11 +29,11 @@ class MongoClient:
 
     def get_mongo_client(
         self,
-        ) -> AsyncIOMotorClient:
+    ) -> AsyncIOMotorClient:
         if self.user and self.password:
-            uri = f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}"
+            uri = f"mongodb://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}"
         else:
-            uri = f"mongodb://{self.host}:{self.port}"
+            uri = f"mongodb://{self.host}:{self.port}/{self.db_name}"  # mongodb://{self.host}:{self.port}
 
         return AsyncIOMotorClient(
             uri,
@@ -62,68 +62,101 @@ class MongoClient:
         self,
         tg_user_id: int,
     ) -> Optional[User]:
-        doc = await self.users_collection.find_one(
-            {
-                "id": tg_user_id,
-            }
-        )
-        if not doc:
+        try:
+            doc = await self.users_collection.find_one(
+                {
+                    "id": tg_user_id,
+                }
+            )
+            if not doc:
+                return None
+            return User(**doc)
+        except Exception as e:
+            _LOG.error(
+                f"Ошибка при получении пользователя {tg_user_id} из MongoDB: {e}"
+            )
             return None
-        return User(**doc)
 
     async def set_age_confirmed(
         self,
         user: User,
     ):
-        user.is_age_confirmed = True
-        now = dt.datetime.now(tz=MOSCOW_TZ)
+        try:
+            user.is_age_confirmed = True
+            now = dt.datetime.now(tz=MOSCOW_TZ)
 
-        if not user.created_at:
-            user.created_at = now
-        user.updated_at = now
+            if not user.created_at:
+                user.created_at = now
+            user.updated_at = now
 
-        user_dict = user.dict()
+            user_dict = user.dict()
 
-        await self.users_collection.update_one(
-            {
-                "id": user.id,
-            },
-            {
-                "$set": user_dict,
-            },
-            upsert=True
-        )
+            await self.users_collection.update_one(
+                {
+                    "id": user.id,
+                },
+                {
+                    "$set": user_dict,
+                },
+                upsert=True,
+            )
+            _LOG.info(
+                f"Возраст подтверждён для пользователя {user.id}"
+            )
+        except Exception as e:
+            _LOG.error(
+                f"Ошибка при подтверждении возраста пользователя {user.id}: {e}"
+            )
+            raise
 
     async def update_subscription(
         self,
         user: User,
         has_subscription: bool,
     ) -> None:
-        await self.users_collection.update_one(
-            {
-                "id": user.id,
-            },
-            {
-                "$set": {
-                    "has_subscription": has_subscription,
-                }
-            },
-            upsert=True,
-        )
+        try:
+            await self.users_collection.update_one(
+                {
+                    "id": user.id,
+                },
+                {
+                    "$set": {
+                        "has_subscription": has_subscription,
+                    }
+                },
+                upsert=True,
+            )
+            _LOG.info(
+                f"Подписка пользователя {user.id} обновлена: has_subscription={has_subscription}"
+            )
+        except Exception as e:
+            _LOG.error(
+                f"Ошибка при обновлении подписки пользователя {user.id}: {e}"
+            )
+            raise
 
     async def update_subscription_expires(
         self,
         user: User,
         subscription_expires_at: dt.datetime,
     ) -> None:
-        await self.users_collection.update_one(
-            {
-                "id": user.id,
-            },
-            {
-                "$set": {
-                    "subscription_expires_at": subscription_expires_at,
-                }
-            },
-            upsert=True,
-        )
+        try:
+            await self.users_collection.update_one(
+                {
+                    "id": user.id,
+                },
+                {
+                    "$set": {
+                        "subscription_expires_at": subscription_expires_at,
+                    }
+                },
+                upsert=True,
+            )
+            _LOG.info(
+                f"Дата окончания подписки пользователя {user.id} обновлена: {subscription_expires_at}"
+            )
+        except Exception as e:
+            _LOG.error(
+                f"Ошибка при обновлении даты окончания подписки пользователя {user.id}: {e}"
+            )
+            raise

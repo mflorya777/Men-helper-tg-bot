@@ -57,7 +57,9 @@ def _main(args: argparse.Namespace) -> int:
     Основная функция запуска. Управляет логированием и действиями по флагам.
     """
 
-    _configure_logging(args.log_level)
+    _configure_logging(
+        args.log_level,
+    )
 
     if args.run_now:
         asyncio.run(run_bot())

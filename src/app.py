@@ -39,6 +39,7 @@ async def register_handlers(
     """
     Функция регистрации всех хэндлеров.
     """
+
     dp.callback_query.register(
         partial(
             buy_stars,
@@ -106,6 +107,7 @@ async def main() -> None:
     """
     Функция запуска бота.
     """
+
     await register_handlers(
         dp,
     )
@@ -113,7 +115,13 @@ async def main() -> None:
         token=TOKEN,
     )
     _LOG.info(
-        "Бот запущен"
+        "Удаляю webhook (если активен) перед запуском long polling",
+    )
+    await bot.delete_webhook(
+        drop_pending_updates=True,
+    )
+    _LOG.info(
+        "Бот запущен",
     )
     await dp.start_polling(
         bot,
